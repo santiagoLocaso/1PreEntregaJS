@@ -1,41 +1,39 @@
+const carrito = []
 
 alert('Bienvenido a Tecno-Lomas!')
 
-const comprarProducto = () => {
-    let producto = ''
+const mostrarProductos = () => {
+    const listaProductos = productos.map(producto => {
+        return '- '+producto.nombre+' $'+producto.precio
+    })
+
+    alert('Lista de productos'+'\n\n'+listaProductos.join('\n'))
+    comprarProducto(listaProductos)
+}
+
+const comprarProducto = (listaProductos) => {
+    let nombreProducto = ''
     let cantidad = 0
     let precio = 0
     let subtotal = 0
     let volverALatienda = false
 
     do {
-        producto = prompt('¿Qué quiere comprar: teclado, mouse, monitor, pc?')
+        nombreProducto = prompt('¿Qué quiere comprar?'+'\n\n'+listaProductos.join('\n'))
         cantidad = parseInt(prompt('Ingrese la cantidad que desea comprar'))
 
-        let cantidadValidada = validarCantidad (cantidad)
+        const producto = productos.find(producto => producto.nombre.toLowerCase() === nombreProducto.toLowerCase())
         
-        switch (producto) {
-            case 'teclado':
-                precio = 4500;
-                break;
-            case 'mouse':
-                precio = 3500; 
-                break;
-            case 'monitor':
-                precio = 25000;
-                break;
-            case 'pc':
-                precio = 60000;
-                break;          
-            default:
-                alert('Alguno de los datos ingresados no es correcto!')
-                precio = 0
-                cantidadValidada = 0
-                break;
+        let cantidadValidada = validarCantidad (cantidad)
+
+        if (producto) {
+            agregarAlCarrito(producto, producto.id, cantidad, precio)
+            subtotal += precio * cantidadValidada
+        } else {
+            alert('Producto sin stock!')
+            cantidadValidada = 0
         }
-
-        subtotal += precio * cantidadValidada
-
+        
         volverALatienda = confirm('¿Desea volver a la tienda?')
     } while (volverALatienda);
 
@@ -50,6 +48,19 @@ const validarCantidad = (cantidad) => {
 
     return cantidad
 }
+
+const agregarAlCarrito = (producto, productoId, cantidad) => {
+    const productoRepetido = carrito.find(producto => producto.id == productoId)
+    if (productoRepetido) {
+        productoRepetido.cantidad += cantidad
+    } else {
+        producto.cantidad += cantidad
+        carrito.push(producto)
+    }
+
+    console.log(carrito)
+}
+
 
 const calcularEnvio = (subtotal) => {
     const envioCompra = confirm('¿Quiere envio a domicilio?')
@@ -71,19 +82,19 @@ const calcularCuotas = (subtotal) => {
     
     switch (cuotas) {
         case '1':
-            (subtotal)
+            subtotal
             alert('el precio total en cuotas es de: $'+subtotal+' en un pago')
             break;
         case '3':
-            (subtotal /= 3)
+            subtotal /= 3
             alert('el precio total en cuotas es de: $'+subtotal+' en 3 cuotas')
             break;
         case '6':
-            (subtotal /= 6)
+            subtotal /= 6
             alert('el precio total en cuotas es de: $'+subtotal+' en 6 cuotas')
             break;
         case '12':
-            (subtotal /= 12)
+            subtotal /= 12
             alert('el precio total en cuotas es de: $'+subtotal+' en 12 cuotas')
             break;
         default:
@@ -101,7 +112,29 @@ const detalleDeCompra = (precioFinal) => {
     alert('El total a pagar es de: $'+precioFinal+'. Gracias por su compra!')
 }
 
-const subtotal = comprarProducto()
+const mostrarCarrito = () => {
+    let mensaje = "Carrito de compras:\n\n";
+    let total = 0;
+  
+    carrito.forEach((producto) => {
+      mensaje += `- ${producto.nombre}: $${producto.precio} x ${producto.cantidad} = $${producto.precio * producto.cantidad}\n`;
+      total += producto.precio * producto.cantidad;
+    });
+  
+    mensaje += `\nTotal: $${total}`;
+  
+    alert(mensaje);
+  };
+
+const desgloceProductos = mostrarProductos()
+
+mostrarCarrito()
+
+const obtenerSubtotal = () => {
+    return carrito.reduce((a,b) => a + b.precio, 0)
+}
+
+const subtotal = obtenerSubtotal()
 
 const subtotalConEnvio = calcularEnvio(subtotal)
 
