@@ -49,12 +49,14 @@ const validarCantidad = (cantidad) => {
     return cantidad
 }
 
-const agregarAlCarrito = (producto, productoId, cantidad) => {
+const agregarAlCarrito = (producto, productoId, cantidad, precio) => {
     const productoRepetido = carrito.find(producto => producto.id == productoId)
     if (productoRepetido) {
         productoRepetido.cantidad += cantidad
+        productoRepetido.subtotal += producto.precio * cantidad
     } else {
-        producto.cantidad += cantidad
+        producto.cantidad = cantidad
+        producto.subtotal = producto.precio * cantidad
         carrito.push(producto)
     }
 
@@ -131,7 +133,7 @@ const desgloceProductos = mostrarProductos()
 mostrarCarrito()
 
 const obtenerSubtotal = () => {
-    return carrito.reduce((a,b) => a + b.precio, 0)
+    return carrito.reduce((a,b) => a + b.subtotal, 0)
 }
 
 const subtotal = obtenerSubtotal()
